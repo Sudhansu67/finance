@@ -1,0 +1,56 @@
+package com.imaginnovate.finance.exception;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import com.imaginnovate.finance.dto.ErrorDto;
+import com.imaginnovate.finance.util.FinanceConstant;
+
+@ControllerAdvice
+public class RestResponseEntityExceptionHandler{
+
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<ErrorDto> handleInvalidInputException(MethodArgumentNotValidException e) {
+		
+		List<String> errors = e.getFieldErrors()
+				.stream()
+				.map(er -> er.getDefaultMessage())
+				.collect(Collectors.toList());
+		
+		ErrorDto dto = new ErrorDto();
+		dto.setCode(HttpStatus.BAD_REQUEST.value());
+		dto.setMessage(errors.toString());
+		dto.setTime(FinanceConstant.DD_MM_YYYY_T_HH_MM_SS.format(LocalDateTime.now()));
+		
+		return new ResponseEntity<ErrorDto>(dto, HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(EmployeeNotFoundException.class)
+	public ResponseEntity<ErrorDto> handleEmployeeNotFoundException(EmployeeNotFoundException e) {
+		
+		ErrorDto dto = new ErrorDto();
+		dto.setCode(404);
+		dto.setMessage(e.getMessage());
+		dto.setTime(FinanceConstant.DD_MM_YYYY_T_HH_MM_SS.format(LocalDateTime.now()));
+		
+		return new ResponseEntity<ErrorDto>(dto, HttpStatus.NOT_FOUND);
+	}
+	
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<ErrorDto> handleAllException(Exception e) {
+		
+		ErrorDto dto = new ErrorDto();
+		dto.setCode(500);
+		dto.setMessage(e.getMessage());
+		dto.setTime(FinanceConstant.DD_MM_YYYY_T_HH_MM_SS.format(LocalDateTime.now()));
+		
+		return new ResponseEntity<ErrorDto>(dto, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+}
