@@ -11,7 +11,7 @@
 
 ### List of APIs:
 
-#### 1. Create new an Employee
+#### 1. Create a new Employee
 URL: http://localhost:8081/employee <br/>
 Type: POST <br/>
 Screenshot: <br/>
