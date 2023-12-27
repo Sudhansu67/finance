@@ -32,22 +32,24 @@ public class RestResponseEntityExceptionHandler{
 		return new ResponseEntity<ErrorDto>(dto, HttpStatus.BAD_REQUEST);
 	}
 	
-	@ExceptionHandler(EmployeeNotFoundException.class)
-	public ResponseEntity<ErrorDto> handleEmployeeNotFoundException(EmployeeNotFoundException e) {
+	@ExceptionHandler({EmployeeNotFoundException.class, 
+		UniqueEmailException.class, 
+		UniquePhoneNumberException.class})
+	public ResponseEntity<ErrorDto> handleEmployeeNotFoundException(RuntimeException e) {
 		
 		ErrorDto dto = new ErrorDto();
-		dto.setCode(404);
+		dto.setCode(HttpStatus.BAD_REQUEST.value());
 		dto.setMessage(e.getMessage());
 		dto.setTime(FinanceConstant.DD_MM_YYYY_T_HH_MM_SS.format(LocalDateTime.now()));
 		
-		return new ResponseEntity<ErrorDto>(dto, HttpStatus.NOT_FOUND);
+		return new ResponseEntity<ErrorDto>(dto, HttpStatus.BAD_REQUEST);
 	}
 	
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ErrorDto> handleAllException(Exception e) {
 		
 		ErrorDto dto = new ErrorDto();
-		dto.setCode(500);
+		dto.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
 		dto.setMessage(e.getMessage());
 		dto.setTime(FinanceConstant.DD_MM_YYYY_T_HH_MM_SS.format(LocalDateTime.now()));
 		
